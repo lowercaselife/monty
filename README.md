@@ -14,6 +14,6 @@
 
 ```
 ## General
-Stack concept projects within holberton school
+Stack concept projects for (ALX)holberton school
 ## Author
-KoeusIss - Holberton School Student
+Danson Kalaghe - (ALX)Holberton School Student
