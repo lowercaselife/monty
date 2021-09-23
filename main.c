@@ -1,45 +1,44 @@
-#include "monte.h"
-/**
- * main - interprets monty byte code
- * @argc: argument count passed by user from the terminal
- * @argv: array of commands passed by user
- * Return: tbd
- */
-int main(int argc, char **argv)
-{
-	FILE *fileptr = fopen(argv[1], "r");
-	char *line_opcode;
-	stack_t *stacknode = malloc(sizeof(stack_t));
-	stack_t **head = &stacknode;
-	char **all_lines;
-	char **line_chunks;
-	unsigned int line_idx = 0;
-	void (*function)(stack_t **, unsigned int);
+#include "monty.h"
 
-	if (argc <= 1)
+/**
+ * Globale data - collection of data instance
+ */
+data_t data;
+
+/**
+ * main - main function
+ * @ac: arguments count
+ * @av: arguments vector
+ *
+ * Return: (Success) EXIT_SUCCESS
+ * ------- (Fail) EXIT_FAILURE
+ */
+int main(int ac, char **av)
+{
+	ssize_t n_read = 1;
+	size_t length = 0;
+	stack_t *stack = NULL;
+
+	memset((void *) &data, 0, sizeof(data));
+	if (ac != 2)
+		push_error(12);
+	data.filename = av[1];
+	data.fp = fopen(data.filename, "r");
+	if (data.fp == NULL)
+		push_error(14);
+	while ((n_read = getline(&data.line, &length, data.fp)) > 0)
 	{
-		perror("USAGE: monty file \n");
-		exit(EXIT_FAILURE);
+		if (*data.line == '\n')
+			continue;
+		data.line_number++;
+		free(data.args);
+		if (split_line() < 0)
+			continue;
+		if (*data.args == NULL)
+			continue;
+		process_line(&stack);
 	}
-	if (!fileptr)
-	{
-		perror("Error: Can\'t open file <>\n");
-		exit(EXIT_FAILURE);
-	}
-	all_lines = readlines(fileptr);
-	while (all_lines[line_idx])
-	{
-		line_chunks = tokenizer(all_lines[line_idx]);
-		line_opcode = get_op(line_chunks);
-		function = get_op_func(line_opcode);
-		if (!function)
-		{
-			perror("L<line_number>: unknown instruction <opcode>");
-			exit(EXIT_FAILURE);
-		}
-		function(head, (line_idx + 1));
-		line_idx++;
-	}
-	fclose(fileptr);
-	return (0);
+	free_data();
+	free_dlistint(stack);
+	return (EXIT_SUCCESS);
 }

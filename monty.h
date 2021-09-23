@@ -1,14 +1,12 @@
-#ifndef MONTE_H
-#define MONTE_H
-#include <stdio.h>
-#include <unistd.h>
+#ifndef _MONTY_H
+#define _MONTY_H
+
+/* Libraries */
+#include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
-
-/* fileptr points to file with byte code*/
-
-extern FILE *fileptr;
-FILE *fileptr;
+#include <unistd.h>
 
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
@@ -40,17 +38,43 @@ typedef struct instruction_s
 	void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
-/* prototypes */
-char **readlines(FILE *filepointer);
-char **tokenizer(char *lines);
-char *get_op(char **tokens);
-int op_arg(char **tokens);
-void push(stack_t **stack, unsigned int line_number);
-void pall(stack_t **stack, unsigned int line_number);
-void pint(stack_t **stack, unsigned int line_number);
-void pop_int(stack_t **stack, unsigned int line_number);
-void swap_int(stack_t **stack, unsigned int line_number);
-void add_ints(stack_t **stack, unsigned int line_number);
-void nop_nop(stack_t **stack, unsigned int line_number);
-void (*get_op_func(char *line_opcode))(stack_t **, unsigned int);
-#endif
+/**
+ * struct instance_s - data instance
+ * @line: the readed line
+ * @args: the arguments
+ * @line_number: line number
+ * @fp: the file
+ * @filename: filename
+ * Description: data instance, line, args
+ */
+typedef struct instance_s
+{
+	char *line;
+	char **args;
+	char *filename;
+	int line_number;
+	FILE *fp;
+} data_t;
+
+extern data_t data;
+
+/* Prototypes */
+int process_line(stack_t **stack);
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+void add_dnodeint(stack_t **stack, unsigned int line_number);
+void push_error(short int err_code);
+void free_data(void);
+void print_dlistint(stack_t **stack, unsigned int line_number);
+void free_dlistint(stack_t *stack);
+int split_line(void);
+void print_top(stack_t **stack, unsigned int line_number);
+void pop_top(stack_t **stack, unsigned int line_number);
+void swap_top(stack_t **stack, unsigned int line_number);
+int _isdigit(char *str);
+void nothing(stack_t **stack, unsigned int line_number);
+void add_top_two(stack_t **stack, unsigned int line_number);
+void sub_top_two(stack_t **stack, unsigned int line_number);
+void div_top_two(stack_t **stack, unsigned int line_number);
+void mul_top_two(stack_t **stack, unsigned int line_number);
+void mod_top_two(stack_t **stack, unsigned int line_number);
+#endif /* _MONTY_H */
